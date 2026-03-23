@@ -224,6 +224,10 @@ export default function BookingWizard() {
           {renderStep()}
         </motion.div>
       </AnimatePresence>
+
+      <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', fontSize: '13px', color: 'var(--color-text-muted)' }}>
+        Developed by Rainer Coetzer
+      </div>
     </div>
   );
 }
