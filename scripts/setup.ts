@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 async function migrate() {
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = 'postgresql://postgres:XjBDQBWCrKKuee6V@db.ptvphirdxtxviqlvafar.supabase.co:6543/postgres';
   if (!databaseUrl) {
     console.error('DATABASE_URL is required');
     process.exit(1);
@@ -26,9 +26,9 @@ async function migrate() {
 }
 
 async function seedAdmin() {
-  const databaseUrl = process.env.DATABASE_URL;
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@studio.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'changeme123';
+  const databaseUrl ='postgresql://postgres:XjBDQBWCrKKuee6V@db.ptvphirdxtxviqlvafar.supabase.co:6543/postgres';
+  const adminEmail = 'rainie.coetzer@gmail.com';
+  const adminPassword = 'Wharfedale01';
 
   if (!databaseUrl) {
     console.error('DATABASE_URL is required');
@@ -38,12 +38,18 @@ async function seedAdmin() {
   const pool = new Pool({ connectionString: databaseUrl });
 
   try {
-    const hash = await bcrypt.hash(adminPassword, 12);
+    // Ensure pgcrypto is enabled for native Supabase hashing
+    await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+    
+    // Hash natively inside the database using crypt and gen_salt
     await pool.query(
-      `INSERT INTO admin_users (email, password_hash, role) VALUES ($1, $2, 'admin') ON CONFLICT (email) DO UPDATE SET password_hash = $2`,
-      [adminEmail, hash]
+      `INSERT INTO admin_users (email, password_hash, role) 
+       VALUES ($1, crypt($2, gen_salt('bf', 12)), 'admin') 
+       ON CONFLICT (email) DO UPDATE 
+       SET password_hash = crypt($2, gen_salt('bf', 12))`,
+      [adminEmail, adminPassword]
     );
-    console.log(`✓ Admin user created: ${adminEmail}`);
+    console.log(`✓ Admin user created/updated: ${adminEmail}`);
   } catch (err) {
     console.error('Seed failed:', err);
     process.exit(1);
