@@ -10,7 +10,12 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  // Use pgcrypto in the database to verify the password against the stored hash
+  const result = await query(
+    'SELECT (password_hash = crypt($1, password_hash)) AS is_match FROM admin_users WHERE password_hash = $2',
+    [password, hash]
+  );
+  return result.rows[0]?.is_match === true;
 }
 
 export function signToken(payload: { id: number; email: string; role: string }): string {
