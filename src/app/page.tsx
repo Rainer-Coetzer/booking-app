@@ -1,9 +1,5 @@
-import BookingWizard from '@/components/booking/BookingWizard';
+import BookingPage from '@/components/booking/BookingPage';
 
-export default function HomePage() {
-  return (
-    <main>
-      <BookingWizard />
-    </main>
-  );
+export default function Home() {
+  return <BookingPage />;
 }
