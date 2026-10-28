@@ -1,61 +1,51 @@
-(function() {
+/*
+ * Booking widget loader.
+ *
+ *   <div data-booking-widget data-booking-url="https://book.example.com"></div>
+ *   <script src="https://book.example.com/embed.js" async></script>
+ *
+ * Optional attributes: data-height (initial height, default 760), data-title.
+ */
+(function () {
   'use strict';
 
-  // Configuration
-  var defaults = {
-    url: '',
-    width: '100%',
-    height: '700px',
-    maxWidth: '720px'
-  };
-
-  function createWidget(container) {
-    var url = container.getAttribute('data-booking-url') || defaults.url;
-    if (!url) {
-      console.error('[BookingWidget] data-booking-url attribute is required');
+  function mount(container) {
+    if (container.getAttribute('data-booking-mounted')) return;
+    var base = (container.getAttribute('data-booking-url') || '').replace(/\/$/, '');
+    if (!base) {
+      console.error('[booking] data-booking-url is required');
+      return;
+    }
+    var origin;
+    try {
+      origin = new URL(base).origin;
+    } catch {
+      console.error('[booking] data-booking-url is not a valid URL');
       return;
     }
 
-    var width = container.getAttribute('data-width') || defaults.width;
-    var height = container.getAttribute('data-height') || defaults.height;
-    var maxWidth = container.getAttribute('data-max-width') || defaults.maxWidth;
-
-    var wrapper = document.createElement('div');
-    wrapper.style.cssText = 'width:' + width + ';max-width:' + maxWidth + ';margin:0 auto;';
-
     var iframe = document.createElement('iframe');
-    iframe.src = url + '/embed';
-    iframe.style.cssText = 'width:100%;height:' + height + ';border:none;background:transparent;';
-    iframe.setAttribute('loading', 'lazy');
-    iframe.setAttribute('title', 'Book a Photography Session');
-    iframe.setAttribute('allow', 'clipboard-write');
+    iframe.src = base + '/embed';
+    iframe.title = container.getAttribute('data-title') || 'Book online';
+    iframe.loading = 'lazy';
+    iframe.style.cssText = 'display:block;width:100%;border:0;height:' + (parseInt(container.getAttribute('data-height'), 10) || 760) + 'px';
+    container.appendChild(iframe);
+    container.setAttribute('data-booking-mounted', 'true');
 
-    wrapper.appendChild(iframe);
-    container.appendChild(wrapper);
-
-    // Auto-resize listener
-    window.addEventListener('message', function(e) {
-      try {
-        var origin = new URL(url).origin;
-        if (e.origin !== origin) return;
-        if (e.data && e.data.type === 'booking-resize') {
-          iframe.style.height = e.data.height + 'px';
-        }
-      } catch(err) { /* ignore */ }
+    window.addEventListener('message', function (event) {
+      if (event.origin !== origin || event.source !== iframe.contentWindow) return;
+      var data = event.data;
+      if (data && data.type === 'booking-resize' && typeof data.height === 'number') {
+        iframe.style.height = Math.max(320, Math.ceil(data.height)) + 'px';
+      }
     });
   }
 
-  // Initialize all booking widgets on page
   function init() {
-    var containers = document.querySelectorAll('[data-booking-widget]');
-    for (var i = 0; i < containers.length; i++) {
-      createWidget(containers[i]);
-    }
+    var nodes = document.querySelectorAll('[data-booking-widget]');
+    for (var i = 0; i < nodes.length; i++) mount(nodes[i]);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

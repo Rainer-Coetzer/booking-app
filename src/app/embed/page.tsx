@@ -1,13 +1,5 @@
-import BookingWizard from '@/components/booking/BookingWizard';
+import BookingPage from '@/components/booking/BookingPage';
 
-export const metadata = {
-  title: 'Book a Session',
-};
-
-export default function EmbedPage() {
-  return (
-    <main className="embed-mode">
-      <BookingWizard />
-    </main>
-  );
+export default function Embed() {
+  return <BookingPage embed />;
 }
