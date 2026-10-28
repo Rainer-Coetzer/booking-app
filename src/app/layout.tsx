@@ -19,19 +19,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Reading headers opts every page into dynamic rendering, which the per-request CSP nonce needs.
   await headers();
   const s = getSettings();
-  const fonts = FONT_PAIRS[(s?.fontFamily as FontPair) ?? 'instrument'] ?? FONT_PAIRS.instrument;
+  const fonts = FONT_PAIRS[s?.fontFamily as FontPair] ?? FONT_PAIRS.geist;
+  const accent = s?.colorAccent ?? '#2c48c5';
 
+  // Only the brand inputs go inline; globals.css derives the ramp and the dark variant.
   const theme = {
-    '--bg': s?.colorBackground ?? '#f7f5f0',
-    '--ink': s?.colorText ?? '#1c1b19',
-    '--accent': s?.colorAccent ?? '#1f4d3a',
-    '--on-accent': readableOn(s?.colorAccent ?? '#1f4d3a'),
+    '--brand-bg': s?.colorBackground ?? '#f6f7f8',
+    '--brand-ink': s?.colorText ?? '#16181d',
+    '--accent': accent,
+    '--on-accent': readableOn(accent),
     '--font-display': fonts.display,
     '--font-body': fonts.body,
+    '--display-weight': fonts.weight,
   } as CSSProperties;
 
   return (
-    <html lang={s?.locale ?? 'en'} className={fontVariables} style={theme}>
+    <html lang={s?.locale ?? 'en'} className={fontVariables} style={theme} data-scheme={s?.colorScheme ?? 'auto'}>
       <body>{children}</body>
     </html>
   );

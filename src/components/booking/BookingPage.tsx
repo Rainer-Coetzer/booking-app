@@ -27,6 +27,10 @@ export default function BookingPage({ embed = false }: { embed?: boolean }) {
         )}
         <h1>{business.name}</h1>
         {business.tagline && <p className="muted">{business.tagline}</p>}
+        {business.coverImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary owner-supplied URL
+          <img className="book-cover" src={business.coverImageUrl} alt="" />
+        )}
         {(business.contactEmail || business.contactPhone) && (
           <div className="book-contact">
             {business.contactEmail && (

@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from 'react';
 import type { PublicConfig } from '@/server/settings';
-import { formatDate, formatDateTime, formatPrice } from '@/lib/format';
+import { formatDuration, formatPrice } from '@/lib/format';
 import type { Service, Slot } from './BookingFlow';
+import { ArrowLeft } from '@phosphor-icons/react';
 
 export interface BookingResult {
   status: string;
@@ -80,11 +81,13 @@ export default function DetailsStep({ config, service, date, slot, onBooked, onB
   return (
     <>
       <h2>Your details</h2>
-      <p className="summary-line" style={{ marginTop: '1rem' }}>
-        <strong>{service.name}</strong>
-        <span>{slot ? formatDateTime(slot.start, config.timezone, config.locale) : `Preferred: ${formatDate(date, config.locale)}`}</span>
-        <span>{formatPrice(service, config.currency, config.locale)}</span>
-      </p>
+      {(formatPrice(service, config.currency, config.locale) || !service.requiresQuote) && (
+        <p className="muted" style={{ marginTop: '0.5rem' }}>
+          {[formatPrice(service, config.currency, config.locale), service.requiresQuote ? null : formatDuration(service.durationMinutes)]
+            .filter(Boolean)
+            .join(', ')}
+        </p>
+      )}
 
       {error && (
         <div className="notice notice-bad" role="alert" style={{ marginBottom: '1.5rem' }}>
@@ -120,7 +123,7 @@ export default function DetailsStep({ config, service, date, slot, onBooked, onB
 
         <div className="step-actions">
           <button type="button" className="btn btn-quiet" onClick={onBack} disabled={submitting}>
-            ← Back
+            <ArrowLeft size={16} aria-hidden="true" /> Back
           </button>
           <button type="submit" className="btn btn-primary" disabled={submitting}>
             {submitting ? 'Sending…' : service.requiresQuote ? 'Request a quote' : 'Book this time'}

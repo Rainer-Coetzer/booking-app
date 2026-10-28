@@ -60,6 +60,7 @@ export function getPublicConfig() {
       name: s.businessName,
       tagline: s.tagline,
       logoUrl: s.logoUrl,
+      coverImageUrl: s.coverImageUrl,
       contactEmail: s.contactEmail,
       contactPhone: s.contactPhone,
       bookingPolicy: s.bookingPolicy,

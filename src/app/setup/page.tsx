@@ -9,8 +9,7 @@ export default function SetupPage() {
   return (
     <main className="auth">
       <div className="setup-panel">
-        <p className="eyebrow">First run</p>
-        <h1 style={{ marginTop: '0.5rem' }}>Set up your booking page</h1>
+        <h1>Set up your booking page</h1>
         <p className="muted" style={{ marginTop: '0.75rem' }}>
           This creates the owner account. Services, hours, branding and email can all be changed afterwards.
         </p>

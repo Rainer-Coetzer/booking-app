@@ -2,6 +2,7 @@
 
 import { useReducer } from 'react';
 import type { PublicConfig } from '@/server/settings';
+import { formatDate, formatTime } from '@/lib/format';
 import ServiceStep from './ServiceStep';
 import DateStep from './DateStep';
 import TimeStep from './TimeStep';
@@ -29,12 +30,20 @@ type Action =
   | { type: 'date'; date: string }
   | { type: 'slot'; slot: Slot }
   | { type: 'booked'; result: BookingResult }
+  | { type: 'goto'; step: Step }
   | { type: 'back' }
   | { type: 'restart' };
 
 const initial: State = { step: 'service', service: null, date: null, slot: null, result: null };
 
-function stepsFor(service: Service | null): Step[] {
+const LABELS: Record<Exclude<Step, 'done'>, string> = {
+  service: 'Service',
+  date: 'Day',
+  time: 'Time',
+  details: 'Your details',
+};
+
+function stepsFor(service: Service | null): Exclude<Step, 'done'>[] {
   return service?.requiresQuote ? ['service', 'date', 'details'] : ['service', 'date', 'time', 'details'];
 }
 
@@ -48,8 +57,10 @@ function reducer(state: State, action: Action): State {
       return { ...state, slot: action.slot, step: 'details' };
     case 'booked':
       return { ...state, result: action.result, step: 'done' };
+    case 'goto':
+      return { ...state, step: action.step };
     case 'back': {
-      const steps = stepsFor(state.service);
+      const steps: Step[] = stepsFor(state.service);
       const i = steps.indexOf(state.step);
       return i > 0 ? { ...state, step: steps[i - 1] } : state;
     }
@@ -61,26 +72,49 @@ function reducer(state: State, action: Action): State {
 export default function BookingFlow({ config }: { config: PublicConfig }) {
   const [state, dispatch] = useReducer(reducer, initial);
   const steps = stepsFor(state.service);
-  const position = steps.indexOf(state.step);
+  const position = steps.indexOf(state.step as Exclude<Step, 'done'>);
   const back = () => dispatch({ type: 'back' });
 
   if (config.services.length === 0) {
-    return <p className="muted">Online booking isn&apos;t open yet. Please get in touch directly.</p>;
+    return (
+      <div className="empty">
+        <h2>Online booking opens soon</h2>
+        <p className="muted">
+          {config.business.contactEmail || config.business.contactPhone
+            ? `In the meantime, get in touch on ${config.business.contactEmail || config.business.contactPhone}.`
+            : 'Please get in touch directly in the meantime.'}
+        </p>
+      </div>
+    );
   }
 
+  // What was picked at each finished step, so the stepper doubles as a summary.
+  const chosen: Partial<Record<Exclude<Step, 'done'>, string>> = {
+    service: state.service?.name,
+    date: state.date ? formatDate(state.date, config.locale, 'short') : undefined,
+    time: state.slot ? formatTime(state.slot.start, config.timezone, config.locale) : undefined,
+  };
+
   return (
-    <section aria-label="Booking">
+    <section aria-label="Booking" className="flow">
       {state.step !== 'done' && (
-        <div className="flow-head">
-          <span className="eyebrow">
-            Step {position + 1} of {steps.length}
-          </span>
-          <ol className="progress" aria-hidden="true">
-            {steps.map((s, i) => (
-              <li key={s} data-done={i <= position} />
-            ))}
-          </ol>
-        </div>
+        <ol className="stepper">
+          {steps.map((s, i) => {
+            const done = i < position;
+            return (
+              <li key={s} aria-current={i === position ? 'step' : undefined} data-done={done}>
+                {done ? (
+                  <button type="button" onClick={() => dispatch({ type: 'goto', step: s })} aria-label={`Change ${LABELS[s].toLowerCase()}: ${chosen[s]}`}>
+                    <span className="stepper-label">{LABELS[s]}</span>
+                    <span className="stepper-value">{chosen[s]}</span>
+                  </button>
+                ) : (
+                  <span className="stepper-label">{LABELS[s]}</span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
       )}
 
       <div className="step" key={state.step}>

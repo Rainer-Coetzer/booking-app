@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import type { PublicConfig } from '@/server/settings';
 import { addDays, dayOfWeek, isInTimeOff } from '@/lib/availability';
 import type { Service } from './BookingFlow';
+import { ArrowLeft, CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface Props {
   config: PublicConfig;
@@ -76,11 +77,11 @@ export default function DateStep({ config, service, selected, onSelect, onBack }
       <div className="calendar" style={{ marginTop: '1.5rem' }}>
         <div className="calendar-nav">
           <button type="button" className="btn btn-quiet" onClick={() => setMonth(shiftMonth(month, -1))} disabled={!canGoBack} aria-label="Previous month">
-            ←
+            <CaretLeft size={18} aria-hidden="true" />
           </button>
           <span aria-live="polite">{monthLabel}</span>
           <button type="button" className="btn btn-quiet" onClick={() => setMonth(shiftMonth(month, 1))} disabled={!canGoForward} aria-label="Next month">
-            →
+            <CaretRight size={18} aria-hidden="true" />
           </button>
         </div>
 
@@ -117,7 +118,7 @@ export default function DateStep({ config, service, selected, onSelect, onBack }
 
       <div className="step-actions">
         <button type="button" className="btn btn-quiet" onClick={onBack}>
-          ← Back
+          <ArrowLeft size={16} aria-hidden="true" /> Back
         </button>
       </div>
     </>
