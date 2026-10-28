@@ -78,7 +78,13 @@ export default async function Overview({ searchParams }: PageProps<'/admin'>) {
       <section className="section">
         <h2>Next two weeks</h2>
         {agenda.length === 0 ? (
-          <p className="muted">Nothing booked yet.</p>
+          <div className="empty">
+            <p className="muted">Nothing booked in the next two weeks.</p>
+            <p className="small">
+              Put your booking page in front of customers: copy the link or embed code from{' '}
+              <Link href="/admin/integrations">Email &amp; calendar</Link>.
+            </p>
+          </div>
         ) : (
           <ul className="agenda">
             {[...byDay].map(([day, items]) => (
@@ -87,7 +93,7 @@ export default async function Overview({ searchParams }: PageProps<'/admin'>) {
                 {items.map((b) => (
                   <div key={b.id} className="agenda-item">
                     <time dateTime={b.startAt!}>
-                      {formatTime(b.startAt!, s.timezone, s.locale)}–{formatTime(b.endAt!, s.timezone, s.locale)}
+                      {formatTime(b.startAt!, s.timezone, s.locale)} to {formatTime(b.endAt!, s.timezone, s.locale)}
                     </time>
                     <span>
                       {b.customerName} · <span className="muted">{b.serviceName}</span>

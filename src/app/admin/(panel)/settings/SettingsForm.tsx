@@ -39,6 +39,15 @@ export default function SettingsForm({ settings: s, fonts }: { settings: Setting
         <Field name="businessName" label="Name" defaultValue={v.text('businessName', s.businessName)} error={f.businessName} required />
         <Field name="tagline" label="Tagline" hint="A line under your name on the booking page." defaultValue={v.text('tagline', s.tagline)} error={f.tagline} />
         <Field name="logoUrl" label="Logo URL" type="url" placeholder="https://" defaultValue={v.text('logoUrl', s.logoUrl)} error={f.logoUrl} />
+        <Field
+          name="coverImageUrl"
+          label="Cover photo URL"
+          type="url"
+          placeholder="https://"
+          hint="A landscape photo of your space or work, shown beside the booking form."
+          defaultValue={v.text('coverImageUrl', s.coverImageUrl)}
+          error={f.coverImageUrl}
+        />
         <div className="grid-2" style={{ marginTop: '1.125rem' }}>
           <Field name="contactEmail" label="Public email" type="email" hint="Customers reply to this." defaultValue={v.text('contactEmail', s.contactEmail)} error={f.contactEmail} />
           <Field name="contactPhone" label="Public phone" defaultValue={v.text('contactPhone', s.contactPhone)} error={f.contactPhone} />
@@ -63,6 +72,15 @@ export default function SettingsForm({ settings: s, fonts }: { settings: Setting
           <Colour name="colorAccent" label="Accent" value={colors.accent} onChange={(accent) => setColors({ ...colors, accent })} error={f.colorAccent} />
           <Colour name="colorBackground" label="Background" value={colors.background} onChange={(background) => setColors({ ...colors, background })} error={f.colorBackground} />
           <Colour name="colorText" label="Text" value={colors.text} onChange={(text) => setColors({ ...colors, text })} error={f.colorText} />
+          <div className="field">
+            <label className="label" htmlFor="colorScheme">Light or dark</label>
+            <select id="colorScheme" name="colorScheme" className="input" defaultValue={v.text('colorScheme', s.colorScheme)}>
+              <option value="auto">Follow each visitor&apos;s device</option>
+              <option value="light">Always light</option>
+              <option value="dark">Always dark</option>
+            </select>
+            <span className="hint">Dark mode is built from your colours automatically.</span>
+          </div>
           <div className="field">
             <label className="label" htmlFor="fontFamily">Typefaces</label>
             <select id="fontFamily" name="fontFamily" className="input" defaultValue={v.text('fontFamily', s.fontFamily)}>

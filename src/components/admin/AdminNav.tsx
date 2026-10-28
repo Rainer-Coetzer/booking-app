@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ArrowUpRight } from '@phosphor-icons/react';
 
 const LINKS = [
   { href: '/admin', label: 'Today' },
@@ -25,7 +26,7 @@ export default function AdminNav() {
         );
       })}
       <Link href="/" target="_blank">
-        View booking page ↗
+        View booking page <ArrowUpRight size={14} aria-hidden="true" />
       </Link>
     </>
   );

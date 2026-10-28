@@ -3,6 +3,7 @@ import { listBookings } from '@/server/bookings';
 import { requireSettings } from '@/server/settings';
 import { BOOKING_STATUSES, type BookingStatus } from '@/server/db/schema';
 import { formatDate, formatDateTime, STATUS_LABELS } from '@/lib/format';
+import { ArrowLeft, ArrowRight } from '@phosphor-icons/react/dist/ssr';
 import BookingActions from '@/components/admin/BookingActions';
 import ConfirmButton from '@/components/admin/ConfirmButton';
 import { eraseBooking } from '../../actions';
@@ -100,8 +101,15 @@ export default async function BookingsPage({ searchParams }: PageProps<'/admin/b
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="muted">
-                  No bookings here yet.
+                <td colSpan={5}>
+                  <div className="empty">
+                    <p className="muted">{status ? `No ${STATUS_LABELS[status].toLowerCase()} bookings.` : 'No bookings yet.'}</p>
+                    {!status && (
+                      <p className="small">
+                        They appear here as customers book. To add one taken by phone, use <Link href="/admin/bookings/new">Add a booking</Link>.
+                      </p>
+                    )}
+                  </div>
                 </td>
               </tr>
             )}
@@ -111,11 +119,11 @@ export default async function BookingsPage({ searchParams }: PageProps<'/admin/b
 
       {pages > 1 && (
         <div className="row" style={{ marginTop: '1.5rem' }}>
-          {page > 1 && <Link className="btn btn-sm" href={href({ status, page: page - 1 })}>← Newer</Link>}
+          {page > 1 && <Link className="btn btn-sm" href={href({ status, page: page - 1 })}><ArrowLeft size={14} aria-hidden="true" /> Newer</Link>}
           <span className="muted small">
             Page {page} of {pages}
           </span>
-          {page < pages && <Link className="btn btn-sm" href={href({ status, page: page + 1 })}>Older →</Link>}
+          {page < pages && <Link className="btn btn-sm" href={href({ status, page: page + 1 })}>Older <ArrowRight size={14} aria-hidden="true" /></Link>}
         </div>
       )}
     </>

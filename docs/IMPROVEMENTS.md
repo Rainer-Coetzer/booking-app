@@ -97,7 +97,7 @@ Next 16 renamed middleware to `proxy`. Moved to [src/proxy.ts](../src/proxy.ts).
 | Supabase Postgres | Embedded SQLite (`better-sqlite3` + Drizzle). One file, no database server. |
 | Hand-run seed script with real credentials | First-run `/setup` page. |
 
-Theming is three colours (background, text, accent) plus a typeface pair. Everything else (borders, muted text, surfaces, status colours) is derived with `color-mix()` in [globals.css](../src/app/globals.css), so any palette produces a complete, consistent interface. Settings refuses text/background pairs below WCAG AA contrast (4.5:1) and shows the ratio live.
+Theming is three colours (background, text, accent), a typeface pair, a cover photo and a light/dark preference. Everything else (borders, muted text, surfaces, status colours) is derived with `color-mix()` in [globals.css](../src/app/globals.css), so any palette produces a complete, consistent interface. Dark mode is derived from the same three colours: the brand's text colour, deepened, becomes the ground. A business can follow each visitor's device or force either scheme. Settings refuses text/background pairs below WCAG AA contrast (4.5:1) and shows the ratio live. Muted text measures above 6.5:1 and input borders above 3:1 in both schemes.
 
 Bookings keep a snapshot of the service name and price at the time of booking, so editing or deleting a service never rewrites history.
 
@@ -128,13 +128,15 @@ In code: comments that narrate the next line (`// Get current booking`, `// Inse
 
 In design: the default Inter + Outfit pairing loaded from Google Fonts, a near-black `#0a0a0a` theme of greys, Tailwind 400-series status colours, uppercase letter-spaced buttons, staggered fade-ins on every card and slot, `transition: all` throughout, emoji used as icons, and evenly split layouts. They are replaced by:
 
-- **Type:** named, self-hosted typeface pairs (Instrument Serif/Sans by default), with tracking set by size.
-- **Colour:** a warm off-white and near-black default ramp.
+- **Type:** self-hosted typeface pairs, sans by default (Geist), with tracking set by size. One serif pair (EB Garamond) is offered for businesses that want an editorial voice on purpose.
+- **Colour:** a cool neutral ground with one cobalt accent by default, a derived dark scheme, and no pure black or white.
 - **Surfaces:** one 2px radius, and one shadow, on the modal only.
 - **Motion:** one 520ms curve, on step changes only.
 - **Layout:** an asymmetric intro column on the booking page, and a weighted stats row in the admin.
 
 Fonts served from our own origin also mean visitors' browsers never contact Google.
+
+A later sweep against a stricter checklist also replaced "Step 1 of 4" with a stepper that names each step and shows what was chosen (click to go back), typed arrows with Phosphor icons, the "Checking availability…" text with a skeleton grid in the shape of the slots, and bare empty states with ones that say what to do next. Buttons now give press feedback.
 
 ---
 

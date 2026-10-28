@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { PublicConfig } from '@/server/settings';
 import { formatDate, formatTime } from '@/lib/format';
 import type { Service, Slot } from './BookingFlow';
+import { ArrowLeft } from '@phosphor-icons/react';
 
 interface Props {
   config: PublicConfig;
@@ -40,10 +41,21 @@ export default function TimeStep({ config, service, date, selected, onSelect, on
       </p>
 
       <div style={{ marginTop: '1.5rem' }} aria-live="polite">
-        {load.state === 'loading' && <p className="loading">Checking availability…</p>}
+        {load.state === 'loading' && (
+          <div className="slots" aria-busy="true" aria-label="Loading available times">
+            {Array.from({ length: 8 }, (_, i) => (
+              <span key={i} className="slot-skeleton" />
+            ))}
+          </div>
+        )}
         {load.state === 'error' && <p className="notice notice-bad">We couldn&apos;t load times. Check your connection and try again.</p>}
         {load.state === 'ready' && load.slots.length === 0 && (
-          <p className="muted">Nothing left on this day. Try another date.</p>
+          <div className="empty">
+            <p>Nothing left on this day.</p>
+            <button type="button" className="btn btn-sm" onClick={onBack}>
+              Pick another day
+            </button>
+          </div>
         )}
         {load.state === 'ready' && load.slots.length > 0 && (
           <div className="slots">
@@ -64,7 +76,7 @@ export default function TimeStep({ config, service, date, selected, onSelect, on
 
       <div className="step-actions">
         <button type="button" className="btn btn-quiet" onClick={onBack}>
-          ← Back
+          <ArrowLeft size={16} aria-hidden="true" /> Back
         </button>
       </div>
     </>

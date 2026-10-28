@@ -72,7 +72,8 @@ export const timeOffSchema = z
 
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a hex colour like #1f4d3a');
 
-export const FONT_CHOICES = ['instrument', 'fraunces', 'bricolage', 'plex'] as const;
+export const FONT_CHOICES = ['geist', 'bricolage', 'plex', 'garamond'] as const;
+export const COLOR_SCHEMES = ['auto', 'light', 'dark'] as const;
 
 export const settingsSchema = z.object({
   businessName: z.string().trim().min(1).max(100),
@@ -88,6 +89,8 @@ export const settingsSchema = z.object({
   colorBackground: hexColor,
   colorText: hexColor,
   fontFamily: z.enum(FONT_CHOICES),
+  colorScheme: z.enum(COLOR_SCHEMES),
+  coverImageUrl: z.union([z.literal(''), z.url().max(500)]).default(''),
   slotIntervalMinutes: z.coerce.number().int().min(5).max(240),
   bufferMinutes: z.coerce.number().int().min(0).max(240),
   minNoticeHours: z.coerce.number().int().min(0).max(24 * 30),
